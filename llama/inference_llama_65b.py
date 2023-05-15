@@ -155,7 +155,7 @@ def if_exec_correct(t_prog, g_prog):
 tokenizer = LlamaTokenizer.from_pretrained("decapoda-research/llama-65b-hf")
 
 # %%
-state_dict = torch.load("./llama-65b/checkpoint-300/hf_llama.pth", map_location="cpu")
+state_dict = torch.load("./llama-65b-2/checkpoint-564/hf_llama.pth", map_location="cpu")
 model = LlamaForCausalLM.from_pretrained("decapoda-research/llama-65b-hf", device_map="auto", torch_dtype=torch.bfloat16)
 model.load_state_dict(state_dict)
 
@@ -259,7 +259,7 @@ for i in tqdm.tqdm(range(0, len(all_input_ids), batch_size)):
                             top_p=0.9, 
                             temperature=0.1, 
                             max_new_tokens=128, 
-                            eos_token_id=13, 
+                            eos_token_id=tokenizer.eos_token_id, 
                             pad_token_id=tokenizer.eos_token_id, 
                             early_stopping=True)
 
@@ -272,10 +272,10 @@ for i in tqdm.tqdm(range(0, len(all_input_ids), batch_size)):
 # %%
 result = {
     "responses": responses,
-    "model_name": "llama65b-finetune-300",
+    "model_name": "llama65b2-finetune-564",
 }
 
-with open("results/llama65b-finetune-300.json", "w") as f:
+with open("results/llama65b2-finetune-564.json", "w") as f:
     json.dump(result, f, indent=4)
 
 # %%
