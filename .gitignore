@@ -6,3 +6,4 @@ llama/llama-7b
 llama/llama-65b
 *.pyc
 *.pkl
+wandb

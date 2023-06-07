@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# DeepSpeed launcher
+torchrun --nproc_per_node=4 --master_port=22101 finetune.py \
+    --model_name_or_path google/flan-ul2 \
+    --data_path t5_finetune_dataset.pkl \
+    --bf16 True \
+    --output_dir flan-ul2 \
+    --num_train_epochs 3 \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 1 \
+    --evaluation_strategy "no" \
+    --save_strategy "epoch" \
+    --save_total_limit 3 \
+    --learning_rate 5e-5 \
+    --weight_decay 0. \
+    --warmup_ratio 0.1 \
+    --deepspeed "configs/deepspeed_config.json" \
+    --gradient_checkpointing True \
+    --tf32 True
+
+# FSDP 
+torchrun --nproc_per_node=4 --master_port=22100 finetune_llama.py \
+--model_name_or_path decapoda-research/llama-7b-hf \
+--data_path llama_finetune_dataset.pkl \
+--bf16 True \
+--output_dir llama-7b \
+--num_train_epochs 3 \
+--per_device_train_batch_size 2 \
+--gradient_accumulation_steps 2 \
+--evaluation_strategy "no" \
+--save_strategy "epoch" \
+--save_total_limit 3 \
+--learning_rate 3e-5 \
+--weight_decay 0. \
+--warmup_ratio 0.1 \
+--fsdp "full_shard auto_wrap" \
+--fsdp_transformer_layer_cls_to_wrap 'LlamaDecoderLayer' \
+--gradient_checkpointing True \
+--tf32 True
+
+python inference_llama_65b.py
+
